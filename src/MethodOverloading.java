@@ -3,13 +3,13 @@ public class MethodOverloading {
         return a  + b;
     }
     float add(float a, float b) {
-        return a  + b;
+        return a + b;
     }
     String add(String a, String b) {
         return a  + b;
     }
     String add(int a, String b) {
-        return a  + b;
+        return a + b;
     }
     String add(String b, int a) {
         return b + a;

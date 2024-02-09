@@ -8,7 +8,7 @@ class Childdog1 extends dog1{
         System.out.println("Child dog is barking");
     }
 }
-public class Doggy {
+public class methodOverridding {
     public static void main(String[] args) {
         Childdog1 cd = new Childdog1();
         cd.bark();
