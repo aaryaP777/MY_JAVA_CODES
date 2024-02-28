@@ -8,7 +8,7 @@ public class WrapperExample01 {
 
        // Auto Boxing
        System.out.println("This is autoboxing");
-       Integer w2 = a;
+       Integer w2 = a; //autoboxing
        System.out.println("w2 with autoboxing: " + w2);
 
        Integer b1 = 50;
