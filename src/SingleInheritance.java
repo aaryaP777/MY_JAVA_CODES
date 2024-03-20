@@ -1,10 +1,10 @@
 class Parent {
-    int a = 20;
+    final int a = 20;
     void displayParent() {
         System.out.println("Parent A = " + a);
     }
 }
-class Child extends Parent{
+final class Child extends Parent{
     int b = 10;
     void displayChild() {
         System.out.println("Parent A = " + a);
