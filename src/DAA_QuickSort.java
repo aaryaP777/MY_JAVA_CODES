@@ -1,32 +1,47 @@
 public class DAA_QuickSort {
-    public static void quickSort(int[] array, int low, int high) {
-        if (low < high) {
-            int pi = partition(array, low, high);
-            quickSort(array, low, pi - 1);
-            quickSort(array, pi + 1, high);
+    public static void printArr(int[] arr){
+        for(int i=0; i<arr.length; i++){
+            System.out.print(arr[i] + " ");
         }
     }
+    public static int partition(int[] arr, int low, int high){
+        int pivot = arr[high];
 
-    public static int partition(int[] array, int low, int high) {
-        int pivot = array[high];
-        int i = (low - 1);
-        for (int j = low; j < high; j++) {
-            if (array[j] <= pivot) {
+        int i = low - 1; // no. of empty spaces where elements < pivot element can fit
+        for(int j = low; j<high; j++){
+            if(arr[j] < pivot) {
                 i++;
-                int temp = array[i];
-                array[i] = array[j];
-                array[j] = temp;
+
+                int temp = arr[i];
+                arr[i] = arr[j];
+                arr[j] = temp;
             }
         }
-        int temp = array[i + 1];
-        array[i + 1] = array[high];
-        array[high] = temp;
-        return i + 1;
+        // to fit pivot in correct position
+        i++;
+        int temp = arr[i];
+        arr[i] = pivot;
+        arr[high] = temp;
+        return i; // pivot index
     }
+    public static void quickSort(int arr[], int low, int high){
+        if(low < high){
 
+            // to get the index of pivot element
+            int pivotIndex = partition(arr, low, high);
+
+            // recursive function for left side of pivot
+            quickSort(arr, low, pivotIndex-1);
+
+            // recursive function for right side of pivot
+            quickSort(arr, pivotIndex+1, high);
+        }
+    }
     public static void main(String[] args) {
-        int[] array = {10, 7, 8, 9, 1, 5};
-        quickSort(array, 0, array.length - 1);
-        System.out.println("Sorted array: " + java.util.Arrays.toString(array));
+        int[] arr = {6,3,9,5,2,8};
+        int n = arr.length;
+
+        quickSort(arr, 0, n-1);
+        printArr(arr);
     }
 }

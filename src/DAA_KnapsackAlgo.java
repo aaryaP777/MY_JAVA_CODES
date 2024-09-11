@@ -1,5 +1,9 @@
-
+// knapsack 0/1
 public class DAA_KnapsackAlgo {
+    // W = remaining capacity of knapsack
+    // wt[] = array of weights
+    // val[] = array of values
+    // n = no. of items available
     static int knapsack(int W, int wt[], int val[], int n){
         if(n==0 || W==0)
             return 0;

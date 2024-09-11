@@ -1,135 +1,105 @@
-// Java program for Kruskal's algorithm
-
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.Collections;
 
-public class DAA_KruskalsAlgo {
+class Edge implements Comparable<Edge>{
+    int src, destination, wt;
 
-    // Defines edge structure
-    static class Edge {
-        int src, dest, weight;
-
-        public Edge(int src, int dest, int weight)
-        {
-            this.src = src;
-            this.dest = dest;
-            this.weight = weight;
-        }
+    Edge(int src, int destination, int wt){
+        this.src = src;
+        this.destination = destination;
+        this.wt = wt;
     }
 
-    // Defines subset element structure
-    static class Subset {
-        int parent, rank;
+    public int compareTo(Edge that){
+        return this.wt - that.wt;
+    }
+}
+public class DAA_KruskalsAlgo{
 
-        public Subset(int parent, int rank)
-        {
-            this.parent = parent;
-            this.rank = rank;
-        }
+    // union find method
+    static int p[], rank[];
+    static void union(int x, int y){
+        int rx = find(x);
+        int ry = find(y);
+        if(rx == ry) return;
+        p[ry] = rx;
+    }
+    static int find(int x){
+        if(p[x] == x) return x;
+        return find(p[x]);
     }
 
-    // Starting point of program execution
-    public static void main(String[] args)
-    {
-        int V = 4;
-        List<Edge> graphEdges = new ArrayList<Edge>(
-                List.of(new Edge(0, 1, 10), new Edge(0, 2, 6),
-                        new Edge(0, 3, 5), new Edge(1, 3, 15),
-                        new Edge(2, 3, 4)));
+    // func to find weights and edges of MST
+    static int spanningTree(int V, ArrayList<ArrayList<ArrayList<Integer>>> adj){
+        boolean added[][] = new boolean[V][V];
+        ArrayList<Edge> edges = new ArrayList<>();
 
-        // Sort the edges in non-decreasing order
-        // (increasing with repetition allowed)
-        graphEdges.sort(new Comparator<Edge>() {
-            @Override public int compare(Edge o1, Edge o2)
-            {
-                return o1.weight - o2.weight;
+        for(int i=0; i<adj.size(); i++){
+            for(int j=0; j<adj.get(i).size(); j++){
+                ArrayList<Integer> cur = adj.get(i).get(j);
+                if(!added[i][cur.get(0)]){
+                    added[i][cur.get(0)] = true;
+                    added[cur.get(0)][i] = true;
+                    edges.add(new Edge(i, cur.get(0), cur.get(1)));
+                }
             }
-        });
+        }
+        p = new int[V];
+        for(int i=0; i<V; i++){
+            p[i] = i;
+        }
 
-        kruskals(V, graphEdges);
+        Collections.sort(edges);
+        int count = 1;
+        int ans = 0;
+
+        for(int i = 0; count<V; i++){
+            Edge edge = edges.get(i);
+            int rx = find(edge.src);
+            int ry = find(edge.destination);
+
+            if(rx != ry){
+                union(rx, ry);
+                count ++;
+                ans += edge.wt;
+            }
+        }
+        return ans;
     }
 
-    // Function to find the MST
-    private static void kruskals(int V, List<Edge> edges)
-    {
-        int j = 0;
-        int noOfEdges = 0;
+    public static void main(String[] args) {
+        int V = 5; // Number of vertices
 
-        // Allocate memory for creating V subsets
-        Subset subsets[] = new Subset[V];
+        // Graph representation using adjacency list
+        ArrayList<ArrayList<ArrayList<Integer>>> adj = new ArrayList<>();
 
-        // Allocate memory for results
-        Edge results[] = new Edge[V];
-
-        // Create V subsets with single elements
+        // Initialize adjacency list
         for (int i = 0; i < V; i++) {
-            subsets[i] = new Subset(i, 0);
+            adj.add(new ArrayList<ArrayList<Integer>>());
         }
+        adj.get(0).add(new ArrayList<Integer>(){{add(1); add(2);}});
+        adj.get(1).add(new ArrayList<Integer>(){{add(0); add(2);}});
 
-        // Number of edges to be taken is equal to V-1
-        while (noOfEdges < V - 1) {
+        adj.get(0).add(new ArrayList<Integer>(){{add(3); add(6);}});
+        adj.get(3).add(new ArrayList<Integer>(){{add(0); add(6);}});
 
-            // Pick the smallest edge. And increment
-            // the index for next iteration
-            Edge nextEdge = edges.get(j);
-            int x = findRoot(subsets, nextEdge.src);
-            int y = findRoot(subsets, nextEdge.dest);
+        adj.get(1).add(new ArrayList<Integer>(){{add(2); add(3);}});
+        adj.get(2).add(new ArrayList<Integer>(){{add(1); add(3);}});
 
-            // If including this edge doesn't cause cycle,
-            // include it in result and increment the index
-            // of result for next edge
-            if (x != y) {
-                results[noOfEdges] = nextEdge;
-                union(subsets, x, y);
-                noOfEdges++;
-            }
+        adj.get(1).add(new ArrayList<Integer>(){{add(3); add(8);}});
+        adj.get(3).add(new ArrayList<Integer>(){{add(1); add(8);}});
 
-            j++;
-        }
+        adj.get(1).add(new ArrayList<Integer>(){{add(4); add(5);}});
+        adj.get(4).add(new ArrayList<Integer>(){{add(1); add(5);}});
 
-        // Print the contents of result[] to display the
-        // built MST
-        System.out.println(
-                "Following are the edges of the constructed MST:");
-        int minCost = 0;
-        for (int i = 0; i < noOfEdges; i++) {
-            System.out.println(results[i].src + " -- "
-                    + results[i].dest + " == "
-                    + results[i].weight);
-            minCost += results[i].weight;
-        }
-        System.out.println("Total cost of MST: " + minCost);
-    }
+        adj.get(2).add(new ArrayList<Integer>(){{add(4); add(7);}});
+        adj.get(4).add(new ArrayList<Integer>(){{add(2); add(7);}});
 
-    // Function to unite two disjoint sets
-    private static void union(Subset[] subsets, int x,
-                              int y)
-    {
-        int rootX = findRoot(subsets, x);
-        int rootY = findRoot(subsets, y);
+        adj.get(3).add(new ArrayList<Integer>(){{add(4); add(9);}});
+        adj.get(4).add(new ArrayList<Integer>(){{add(3); add(9);}});
 
-        if (subsets[rootY].rank < subsets[rootX].rank) {
-            subsets[rootY].parent = rootX;
-        }
-        else if (subsets[rootX].rank
-                < subsets[rootY].rank) {
-            subsets[rootX].parent = rootY;
-        }
-        else {
-            subsets[rootY].parent = rootX;
-            subsets[rootX].rank++;
-        }
-    }
-
-    // Function to find parent of a set
-    private static int findRoot(Subset[] subsets, int i)
-    {
-        if (subsets[i].parent == i)
-            return subsets[i].parent;
-
-        subsets[i].parent
-                = findRoot(subsets, subsets[i].parent);
-        return subsets[i].parent;
+        // Calculate the MST weight
+        int mstWeight = spanningTree(V, adj);
+        System.out.println("The weight of the Minimum Spanning Tree is: " + mstWeight);
     }
 }

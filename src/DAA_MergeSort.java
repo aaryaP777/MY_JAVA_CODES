@@ -1,56 +1,63 @@
 public class DAA_MergeSort {
-    public static void mergeSort(int[] array, int left, int right) {
-        if (left < right) {
-            int mid = (left + right) / 2;
-            mergeSort(array, left, mid);
-            mergeSort(array, mid + 1, right);
-            merge(array, left, mid, right);
-        }
-    }
+    public static void conquer(int arr[], int start, int mid, int end){
+        int merged[] = new int[end - start + 1];
 
-    public static void merge(int[] array, int left, int mid, int right) {
-        int n1 = mid - left + 1;
-        int n2 = right - mid;
+        int start2 = start; // for first array
+        int end2 = mid+1; // for second array
+        int mergedIndex = 0; // for merged array
 
-        int[] leftArray = new int[n1];
-        int[] rightArray = new int[n2];
-
-        for (int i = 0; i < n1; ++i) {
-            leftArray[i] = array[left + i];
-        }
-        for (int j = 0; j < n2; ++j) {
-            rightArray[j] = array[mid + 1 + j];
-        }
-
-        int i = 0, j = 0;
-        int k = left;
-        while (i < n1 && j < n2) {
-            if (leftArray[i] <= rightArray[j]) {
-                array[k] = leftArray[i];
-                i++;
-            } else {
-                array[k] = rightArray[j];
-                j++;
+        while(start2 <= mid && end2<= end){
+            if(arr[start2] <= arr[end2]){
+                merged[mergedIndex] = arr[start2];
+                mergedIndex ++;
+                start2 ++;
             }
-            k++;
+            else{
+                merged[mergedIndex] = arr[end2];
+                mergedIndex ++;
+                end2++;
+            }
         }
 
-        while (i < n1) {
-            array[k] = leftArray[i];
-            i++;
-            k++;
+        while(start2 <= mid){
+            merged[mergedIndex] = arr[start2];
+            mergedIndex ++;
+            start2++;
         }
 
-        while (j < n2) {
-            array[k] = rightArray[j];
-            j++;
-            k++;
+        while(end2 <= end){
+            merged[mergedIndex] = arr[end2];
+            mergedIndex ++;
+            end2++;
         }
+
+        for(int i=0; i<merged.length; i++){
+            arr[start + i] = merged[i];
+        }
+
     }
+    public static void divide(int arr[], int start, int end){
 
+        if(start >= end){
+            return ;
+        }
+
+        int mid = (start + end)/2;
+        divide(arr, start, mid);
+        divide(arr, mid+1, end);
+
+        conquer(arr, start, mid, end);
+
+    }
     public static void main(String[] args) {
-        int[] array = {12, 11, 13, 5, 6, 7};
-        mergeSort(array, 0, array.length - 1);
-        System.out.println("Sorted array: " + java.util.Arrays.toString(array));
+        int arr[] = {6,3,9,5,2,8};
+        int n = arr.length;
+
+        divide(arr, 0, n-1);
+
+        for(int i=0; i<n; i++){
+            System.out.print(arr[i] + " ");
+        }
+        System.out.println();
     }
 }

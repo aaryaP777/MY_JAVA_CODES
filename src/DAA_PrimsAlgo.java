@@ -1,113 +1,88 @@
-// A Java program for Prim's Minimum Spanning Tree (MST)
-// algorithm. The program is for adjacency matrix
-// representation of the graph
+import java.util.ArrayList;
+import java.util.PriorityQueue;
+class Pair implements Comparable<Pair>{
+    int wt;
+    int v;
+    Pair(int v, int wt){
+        this.v = v;
+        this.wt = wt;
+    }
+    public int compareTo(Pair that){
+        return this.wt- that.wt;
+    }
+}
+public class DAA_PrimsAlgo{
+    static int spanningTree(int v, ArrayList<ArrayList<ArrayList<Integer>>> adj){
+        boolean[] vis = new boolean[v];
+        PriorityQueue<Pair> q = new PriorityQueue<Pair>();
 
-import java.io.*;
-import java.lang.*;
-import java.util.*;
+        q.add(new Pair(0,0));
+        int ans = 0;
+        while(q.size() != 0){
+            Pair cur = q.remove();
 
-class MST {
-
-    // Number of vertices in the graph
-    private static final int V = 5;
-
-    // A utility function to find the vertex with minimum
-    // key value, from the set of vertices not yet included
-    // in MST
-    int minKey(int key[], Boolean mstSet[])
-    {
-        // Initialize min value
-        int min = Integer.MAX_VALUE, min_index = -1;
-
-        for (int v = 0; v < V; v++)
-            if (mstSet[v] == false && key[v] < min) {
-                min = key[v];
-                min_index = v;
+            int u = cur.v;
+            if(vis[u]){
+                continue;
             }
+            ans+=cur.wt;
+            vis[u]=true;
 
-        return min_index;
-    }
+            ArrayList<ArrayList<Integer>> neighbors = adj.get(u);
 
-    // A utility function to print the constructed MST
-    // stored in parent[]
-    void printMST(int parent[], int graph[][])
-    {
-        System.out.println("Edge \tWeight");
-        for (int i = 1; i < V; i++)
-            System.out.println(parent[i] + " - " + i + "\t"
-                    + graph[i][parent[i]]);
-    }
-
-    // Function to construct and print MST for a graph
-    // represented using adjacency matrix representation
-    void primMST(int graph[][])
-    {
-        // Array to store constructed MST
-        int parent[] = new int[V];
-
-        // Key values used to pick minimum weight edge in
-        // cut
-        int key[] = new int[V];
-
-        // To represent set of vertices included in MST
-        Boolean mstSet[] = new Boolean[V];
-
-        // Initialize all keys as INFINITE
-        for (int i = 0; i < V; i++) {
-            key[i] = Integer.MAX_VALUE;
-            mstSet[i] = false;
-        }
-
-        // Always include first 1st vertex in MST.
-        // Make key 0 so that this vertex is
-        // picked as first vertex
-        key[0] = 0;
-
-        // First node is always root of MST
-        parent[0] = -1;
-
-        // The MST will have V vertices
-        for (int count = 0; count < V - 1; count++) {
-
-            // Pick the minimum key vertex from the set of
-            // vertices not yet included in MST
-            int u = minKey(key, mstSet);
-
-            // Add the picked vertex to the MST Set
-            mstSet[u] = true;
-
-            // Update key value and parent index of the
-            // adjacent vertices of the picked vertex.
-            // Consider only those vertices which are not
-            // yet included in MST
-            for (int v = 0; v < V; v++)
-
-                // graph[u][v] is non zero only for adjacent
-                // vertices of m mstSet[v] is false for
-                // vertices not yet included in MST Update
-                // the key only if graph[u][v] is smaller
-                // than key[v]
-                if (graph[u][v] != 0 && mstSet[v] == false
-                        && graph[u][v] < key[v]) {
-                    parent[v] = u;
-                    key[v] = graph[u][v];
+            for(ArrayList<Integer> list: neighbors){
+                int vertex = list.get(0);
+                int wt = list.get(1);
+                if(vis[vertex] == false){
+                    q.add(new Pair(vertex, wt));
                 }
+            }
         }
-
-        // Print the constructed MST
-        printMST(parent, graph);
+    return ans;
     }
 
-    public static void main(String[] args)
-    {
-        MST t = new MST();
-        int graph[][] = new int[][] { { 0, 2, 0, 6, 0 },
-                { 2, 0, 3, 8, 5 },
-                { 0, 3, 0, 0, 7 },
-                { 6, 8, 0, 0, 9 },
-                { 0, 5, 7, 9, 0 } };
+    public static void main(String[] args) {
+        int V = 5; // Number of vertices
 
-        // Print the solution
-        t.primMST(graph);
+        // Initialize the adjacency list for the graph
+        ArrayList<ArrayList<ArrayList<Integer>>> adj = new ArrayList<>();
+
+        // Add edges to the adjacency list
+        for (int i = 0; i < V; i++) {
+            adj.add(new ArrayList<ArrayList<Integer>>());
+        }
+
+        // Example graph: undirected graph
+        // Edge 0-1 with weight 2
+        adj.get(0).add(new ArrayList<Integer>(){{add(1); add(2);}});
+        adj.get(1).add(new ArrayList<Integer>(){{add(0); add(2);}});
+
+        // Edge 0-3 with weight 6
+        adj.get(0).add(new ArrayList<Integer>(){{add(3); add(6);}});
+        adj.get(3).add(new ArrayList<Integer>(){{add(0); add(6);}});
+
+        // Edge 1-2 with weight 3
+        adj.get(1).add(new ArrayList<Integer>(){{add(2); add(3);}});
+        adj.get(2).add(new ArrayList<Integer>(){{add(1); add(3);}});
+
+        // Edge 1-3 with weight 8
+        adj.get(1).add(new ArrayList<Integer>(){{add(3); add(8);}});
+        adj.get(3).add(new ArrayList<Integer>(){{add(1); add(8);}});
+
+        // Edge 1-4 with weight 5
+        adj.get(1).add(new ArrayList<Integer>(){{add(4); add(5);}});
+        adj.get(4).add(new ArrayList<Integer>(){{add(1); add(5);}});
+
+        // Edge 2-4 with weight 7
+        adj.get(2).add(new ArrayList<Integer>(){{add(4); add(7);}});
+        adj.get(4).add(new ArrayList<Integer>(){{add(2); add(7);}});
+
+        // Edge 3-4 with weight 9
+        adj.get(3).add(new ArrayList<Integer>(){{add(4); add(9);}});
+        adj.get(4).add(new ArrayList<Integer>(){{add(3); add(9);}});
+
+        // Call the spanningTree function
+        int mstWeight = spanningTree(V, adj);
+        System.out.println("The weight of the Minimum Spanning Tree is: " + mstWeight);
     }
 }
