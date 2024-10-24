@@ -11,6 +11,8 @@ class Item {
     }
 }
 public class DAA_KnapsackFractionalAlgo {
+
+    // func to find max value
     public static double MaxValue(Item[] items, double capacity){
 
         // sort items by their value-weight ratio in desc order
